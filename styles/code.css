@@ -1,0 +1,18 @@
+.code-link
+{
+    color: aquamarine;
+}
+.code-link:hover
+{
+    color: blue;
+}
+
+.code-link:visited
+{
+    color: darkgreen;
+}
+
+.un-code-link
+{
+    color: gray;
+}
