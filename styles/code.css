@@ -1,4 +1,4 @@
-.code-link
+.code-link:link
 {
     color: aquamarine;
 }
@@ -12,7 +12,7 @@
     color: darkgreen;
 }
 
-.un-code-link
+.un-code-link:link
 {
     color: gray;
 }
