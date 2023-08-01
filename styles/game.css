@@ -26,3 +26,8 @@
 {
     color: darkgreen;
 }
+
+.bjimg
+{
+    background-image: url(../images/game/background.png);
+}
