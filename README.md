@@ -1,7 +1,5 @@
 # thchfhch1.github.io
 --------
-![](images/tree.jpg)
+![](images/home.png) ***thchfhch***
 
-去这个网站：[我的网站](https://thchfhch1.github.io)
-
-Go to this site: [My site](https://thchfhch1.github.io)
+>[我的网站](https://thchfhch1.github.io) / [My site](https://thchfhch1.github.io)
