@@ -1,3 +1,7 @@
+li
+{
+    color: darkgoldenrod;
+}
 .nlist
 {
     list-style-type: none;
@@ -25,6 +29,11 @@
 .sp:visited
 {
     color: darkgreen;
+}
+
+h2
+{
+    color: orange;
 }
 
 body

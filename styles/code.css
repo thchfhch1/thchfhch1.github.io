@@ -1,3 +1,7 @@
+li
+{
+    color: darkgoldenrod;
+}
 .code-link:link
 {
     color: aquamarine;
@@ -15,6 +19,11 @@
 .un-code-link:link
 {
     color: gray;
+}
+
+h2
+{
+    color: orange;
 }
 
 body
