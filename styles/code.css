@@ -6,14 +6,13 @@ li
 {
     color: aquamarine;
 }
-.code-link:hover
-{
-    color: blue;
-}
-
 .code-link:visited
 {
     color: darkgreen;
+}
+.code-link:hover
+{
+    color: blue;
 }
 
 .un-code-link:link
@@ -28,7 +27,7 @@ h2
 
 body
 {
-    background: url(../images/code/binary.png) no-repeat center center fixed;
+    background: url(../images/code/binary2.png) no-repeat center center fixed;
     /*兼容浏览器版本*/
     -webkit-background-size: cover;
     -o-background-size: cover;                
