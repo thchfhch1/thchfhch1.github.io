@@ -43,4 +43,4 @@ randButton.addEventListener('click', () =>
 }
 );
 
-//????????
+//?不是你tm的为什么不提交我的js，tm的是有病是吧
