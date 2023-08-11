@@ -42,3 +42,5 @@ randButton.addEventListener('click', () =>
     para.style.color = (randomColorOn ? randomColor() : 'orange');
 }
 );
+
+//????????
