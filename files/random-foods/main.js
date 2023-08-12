@@ -1,3 +1,6 @@
+const version = 'V3';
+document.title = '随机菜品 ' + version + ' - By thchfhch';
+
 const randButton = document.querySelector('button');
 const checkBox = document.querySelector('input');
 const para = document.querySelector('h2');
@@ -42,5 +45,3 @@ randButton.addEventListener('click', () =>
     para.style.color = (randomColorOn ? randomColor() : 'orange');
 }
 );
-
-//?不是你tm的为什么不提交我的js，tm的是有病是吧
