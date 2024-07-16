@@ -1,0 +1,43 @@
+button.rand
+{
+    width: auto;
+    height: auto;
+    background-color: aqua;
+}
+
+input{
+  width: auto;
+  height: auto;
+}
+
+  dl dt{
+    font-family: Consolas, 'Courier New', monospace;
+  }
+
+  dl dt.di:hover {
+    background-color: #eee;
+  }
+   
+  /* 设置关闭按钮 */
+  .close {
+    cursor: pointer;
+    /* position: absolute;  */
+    /* top: 50%; */
+    /* right: 75%; */
+    color: red;
+    padding: 1px 5px;
+    /* transform: translate(0%, -50%); */
+  }
+   
+  .close:hover {background: #bbb;}
+
+/* .shadow
+{
+    position: fixed;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: darkgray;
+} */
