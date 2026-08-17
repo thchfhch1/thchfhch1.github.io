@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>洛谷数据测试点配置生成器 (增强版)</title>
-    <!-- SortableJS for drag & drop -->
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <title>洛谷数据测试点配置生成器</title>
+    <!-- SortableJS -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js">
+    </script>
     <style>
-        /* 全局样式 (继承之前，并做调整) */
+        /* ===== 全局重置 ===== */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -38,6 +39,7 @@
             }
         }
 
+        /* ===== 头部 ===== */
         .header {
             display: flex;
             align-items: center;
@@ -83,7 +85,7 @@
             }
         }
 
-        /* 全局设置区 */
+        /* ===== 全局设置 ===== */
         .global-settings {
             background: #f7faff;
             border-radius: 16px;
@@ -132,17 +134,13 @@
         .global-settings .setting-group.prefix-group {
             flex: 2 1 200px;
         }
-        .global-settings .setting-group.prefix-group label {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
         .global-settings .setting-group.prefix-group label .hint {
             font-weight: 400;
             color: #8a9aa8;
             font-size: 12px;
         }
 
+        /* ===== 添加表单 ===== */
         .form-card {
             background: #f7faff;
             border-radius: 16px;
@@ -240,11 +238,6 @@
         .btn-add:active {
             transform: scale(0.97);
         }
-        .btn-add:disabled {
-            background: #b0c4d8;
-            cursor: not-allowed;
-            transform: none;
-        }
 
         @media (max-width: 700px) {
             .form-row {
@@ -261,6 +254,7 @@
             }
         }
 
+        /* ===== 消息 ===== */
         .msg {
             font-size: 14px;
             padding: 8px 14px;
@@ -292,6 +286,7 @@
             font-size: 18px;
         }
 
+        /* ===== 任务列表 ===== */
         .list-section {
             margin-top: 4px;
         }
@@ -362,21 +357,11 @@
         .btn-primary:active {
             transform: scale(0.97);
         }
-        .btn-primary:disabled {
-            background: #b0c4d8;
-            cursor: not-allowed;
-        }
         .btn-success {
             background: #16a34a;
         }
         .btn-success:hover {
             background: #15803d;
-        }
-        .btn-secondary {
-            background: #6b7a8a;
-        }
-        .btn-secondary:hover {
-            background: #4a5a6a;
         }
 
         .table-wrap {
@@ -389,7 +374,7 @@
             width: 100%;
             border-collapse: collapse;
             font-size: 14px;
-            min-width: 520px;
+            min-width: 600px;
         }
         thead {
             background: #eef4fa;
@@ -419,27 +404,42 @@
             text-align: center;
             font-weight: 500;
             color: #4a5a6a;
-            width: 40px;
+            width: 30px;
         }
-        .col-del {
+        .col-drag {
             text-align: center;
-            width: 50px;
+            width: 30px;
+            cursor: grab;
+            color: #b0c4d8;
+            user-select: none;
+            font-size: 18px;
         }
-        .btn-del {
+        .col-actions {
+            text-align: center;
+            width: 90px;
+            white-space: nowrap;
+        }
+        .btn-icon {
             background: none;
             border: none;
-            color: #b0c4d8;
-            font-size: 20px;
             cursor: pointer;
-            transition: color 0.2s, transform 0.1s;
-            padding: 4px 8px;
+            font-size: 17px;
+            padding: 4px 6px;
             border-radius: 6px;
-            line-height: 1;
+            transition: background 0.2s, color 0.2s;
+            color: #6b7a8a;
         }
-        .btn-del:hover {
-            color: #dc2626;
+        .btn-icon:hover {
+            background: #eef3f8;
+            color: #1a2b3c;
+        }
+        .btn-icon.danger:hover {
             background: #fef2f2;
-            transform: scale(1.1);
+            color: #dc2626;
+        }
+        .btn-icon.edit:hover {
+            background: #eff6ff;
+            color: #2563eb;
         }
         .empty-row td {
             text-align: center;
@@ -448,18 +448,7 @@
             font-size: 15px;
         }
 
-        /* 拖拽手柄 */
-        .drag-handle {
-            cursor: grab;
-            color: #b0c4d8;
-            font-size: 18px;
-            user-select: none;
-            padding: 0 4px;
-        }
-        .drag-handle:active {
-            cursor: grabbing;
-        }
-
+        /* ===== 预览 ===== */
         .preview-section {
             margin-top: 24px;
             border-top: 2px dashed #e6edf6;
@@ -488,7 +477,6 @@
             gap: 10px;
             flex-wrap: wrap;
         }
-
         textarea {
             width: 100%;
             height: 280px;
@@ -517,6 +505,7 @@
             display: none !important;
         }
 
+        /* ===== Toast ===== */
         .toast {
             position: fixed;
             bottom: 30px;
@@ -545,9 +534,128 @@
             background: #dc2626;
         }
 
-        /* 导入输入框隐藏 */
+        /* ===== 编辑模态框 ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.25s ease;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 28px 32px 32px;
+            max-width: 560px;
+            width: 92%;
+            box-shadow: 0 20px 60px rgba(0, 20, 40, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        .modal h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a2b3c;
+            margin-bottom: 6px;
+        }
+        .modal .subtitle {
+            font-size: 14px;
+            color: #6b7a8a;
+            margin-bottom: 20px;
+        }
+        .modal .form-row {
+            gap: 14px;
+            margin-bottom: 4px;
+        }
+        .modal .form-group {
+            flex: 1 1 80px;
+        }
+        .modal .form-group label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #3e4e5e;
+        }
+        .modal .form-group input {
+            height: 42px;
+            font-size: 14px;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+        }
+        .modal-actions .btn {
+            padding: 8px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .modal-actions .btn-primary {
+            background: #3b82f6;
+            color: #fff;
+        }
+        .modal-actions .btn-primary:hover {
+            background: #2563eb;
+        }
+        .modal-actions .btn-secondary {
+            background: #eef3f8;
+            color: #3e4e5e;
+        }
+        .modal-actions .btn-secondary:hover {
+            background: #dce6f0;
+        }
+
+        /* 隐藏文件输入 */
         #fileInput {
             display: none;
+        }
+
+        /* 滚动条 */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #eef3f8;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c8d6e4;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8b8c8;
         }
     </style>
 </head>
@@ -563,13 +671,13 @@
             <span class="badge">📄 config.yml</span>
         </div>
 
-        <!-- 消息提示 -->
+        <!-- 消息 -->
         <div class="msg" id="msgBox">
             <span class="icon"></span>
             <span class="text"></span>
         </div>
 
-        <!-- 全局设置 (醒目) -->
+        <!-- 全局设置 -->
         <div class="global-settings">
             <div class="setting-group prefix-group">
                 <label>
@@ -640,7 +748,7 @@
                             <th>分值</th>
                             <th>时间 (ms)</th>
                             <th>内存 (MB)</th>
-                            <th style="width:50px;"></th>
+                            <th style="width:90px;">操作</th>
                         </tr>
                     </thead>
                     <tbody id="taskTableBody">
@@ -665,7 +773,41 @@
         </div>
 
         <div style="margin-top:22px;font-size:13px;color:#8a9aa8;text-align:center;border-top:1px solid #eef3f8;padding-top:18px;">
-            生成的文件格式符合洛谷数据测试点规范 · 内存限制自动转换为 KB · 拖拽行手柄可调整子任务顺序
+            生成的文件格式符合洛谷数据测试点规范 · 内存限制自动转换为 KB · 拖拽行手柄可调整子任务顺序 · 点击 ✎ 编辑子任务
+        </div>
+    </div>
+
+    <!-- ===== 编辑模态框 ===== -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal">
+            <h2>✏️ 编辑子任务</h2>
+            <div class="subtitle">修改当前子任务的配置项</div>
+            <div class="form-row" style="gap:14px;">
+                <div class="form-group">
+                    <label>起始编号 <span class="unit">(l)</span></label>
+                    <input type="number" id="editL" min="1" step="1" />
+                </div>
+                <div class="form-group">
+                    <label>结束编号 <span class="unit">(r)</span></label>
+                    <input type="number" id="editR" min="1" step="1" />
+                </div>
+                <div class="form-group">
+                    <label>分值 <span class="unit">(sc)</span></label>
+                    <input type="number" id="editSc" min="1" step="1" />
+                </div>
+                <div class="form-group">
+                    <label>时间限制 <span class="unit">(ms)</span></label>
+                    <input type="number" id="editTl" min="1" step="1" />
+                </div>
+                <div class="form-group">
+                    <label>内存限制 <span class="unit">(MB)</span></label>
+                    <input type="number" id="editMl" min="1" step="1" />
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="editCancel">取消</button>
+                <button class="btn btn-primary" id="editSave">💾 保存</button>
+            </div>
         </div>
     </div>
 
@@ -676,7 +818,7 @@
         (function() {
             'use strict';
 
-            // DOM refs
+            // ===== DOM refs =====
             const inputL = document.getElementById('inputL');
             const inputR = document.getElementById('inputR');
             const inputSc = document.getElementById('inputSc');
@@ -699,11 +841,22 @@
             const btnImport = document.getElementById('btnImport');
             const fileInput = document.getElementById('fileInput');
 
-            // ---------- State ----------
-            let tasks = []; // { id, l, r, sc, tl, ml }
-            let nextId = 1;
+            // 编辑模态框
+            const editModal = document.getElementById('editModal');
+            const editL = document.getElementById('editL');
+            const editR = document.getElementById('editR');
+            const editSc = document.getElementById('editSc');
+            const editTl = document.getElementById('editTl');
+            const editMl = document.getElementById('editMl');
+            const editCancel = document.getElementById('editCancel');
+            const editSave = document.getElementById('editSave');
 
-            // ---------- Helpers ----------
+            // ===== State =====
+            let tasks = [];
+            let nextId = 1;
+            let editingTaskId = null; // 当前编辑的任务ID
+
+            // ===== Helpers =====
             function showMsg(type, text) {
                 const map = { error: '❌', success: '✅', info: 'ℹ️' };
                 msgBox.className = 'msg ' + type;
@@ -736,22 +889,17 @@
                 return input.value.trim();
             }
 
-            function validateInputs() {
-                const l = getVal(inputL);
-                const r = getVal(inputR);
-                const sc = getVal(inputSc);
-                const tl = getVal(inputTl);
-                const ml = getVal(inputMl);
-                if (l === null || l < 1) { showMsg('error', '起始编号必须为正整数'); return null; }
-                if (r === null || r < 1) { showMsg('error', '结束编号必须为正整数'); return null; }
-                if (l > r) { showMsg('error', '起始编号不能大于结束编号'); return null; }
-                if (sc === null || sc < 1) { showMsg('error', '分值必须为正整数'); return null; }
-                if (tl === null || tl < 1) { showMsg('error', '时间限制必须为正整数'); return null; }
-                if (ml === null || ml < 1) { showMsg('error', '内存限制必须为正整数'); return null; }
-                return { l, r, sc, tl, ml };
+            function validateInputs(l, r, sc, tl, ml) {
+                if (l === null || l < 1) { showMsg('error', '起始编号必须为正整数'); return false; }
+                if (r === null || r < 1) { showMsg('error', '结束编号必须为正整数'); return false; }
+                if (l > r) { showMsg('error', '起始编号不能大于结束编号'); return false; }
+                if (sc === null || sc < 1) { showMsg('error', '分值必须为正整数'); return false; }
+                if (tl === null || tl < 1) { showMsg('error', '时间限制必须为正整数'); return false; }
+                if (ml === null || ml < 1) { showMsg('error', '内存限制必须为正整数'); return false; }
+                return true;
             }
 
-            // ---------- Render Table ----------
+            // ===== Render =====
             function renderTable() {
                 tbody.innerHTML = '';
                 if (tasks.length === 0) {
@@ -765,66 +913,72 @@
                     tr.dataset.id = t.id;
                     tr.innerHTML = `
                         <td class="col-id">${idx + 1}</td>
-                        <td class="drag-handle" style="text-align:center; cursor:grab;">⠿</td>
+                        <td class="col-drag">⠿</td>
                         <td>${t.l}</td>
                         <td>${t.r}</td>
                         <td>${t.sc}</td>
                         <td>${t.tl}</td>
                         <td>${t.ml}</td>
-                        <td class="col-del">
-                            <button class="btn-del" data-id="${t.id}" title="删除">✕</button>
+                        <td class="col-actions">
+                            <button class="btn-icon edit" data-id="${t.id}" title="编辑">✎</button>
+                            <button class="btn-icon danger" data-id="${t.id}" title="删除">✕</button>
                         </td>
                     `;
                     tbody.appendChild(tr);
                 });
                 taskCount.textContent = tasks.length;
 
-                // 绑定删除事件
-                tbody.querySelectorAll('.btn-del').forEach(btn => {
+                // 绑定事件
+                tbody.querySelectorAll('.btn-icon.edit').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        const id = parseInt(this.dataset.id, 10);
+                        openEditModal(id);
+                    });
+                });
+                tbody.querySelectorAll('.btn-icon.danger').forEach(btn => {
                     btn.addEventListener('click', function(e) {
                         const id = parseInt(this.dataset.id, 10);
                         deleteTask(id);
                     });
                 });
 
-                // 初始化拖拽 (Sortable)
                 initSortable();
-
                 previewSection.classList.add('hidden');
             }
 
-            // ---------- Sortable ----------
+            // ===== Sortable =====
             let sortableInstance = null;
+
             function initSortable() {
                 if (sortableInstance) {
                     sortableInstance.destroy();
                     sortableInstance = null;
                 }
                 if (tasks.length < 2) return;
-                const el = tbody;
-                sortableInstance = new Sortable(el, {
-                    handle: '.drag-handle',
+                sortableInstance = new Sortable(tbody, {
+                    handle: '.col-drag',
                     animation: 150,
                     onEnd: function(evt) {
-                        // 更新 tasks 顺序
                         const oldIndex = evt.oldIndex;
                         const newIndex = evt.newIndex;
                         if (oldIndex === newIndex) return;
                         const moved = tasks.splice(oldIndex, 1)[0];
                         tasks.splice(newIndex, 0, moved);
-                        // 重新渲染表格保持 id 不变
                         renderTable();
                         showMsg('info', '↕ 子任务顺序已更新');
                     }
                 });
             }
 
-            // ---------- CRUD ----------
+            // ===== CRUD =====
             function addTask() {
-                const data = validateInputs();
-                if (!data) return;
-                const { l, r, sc, tl, ml } = data;
-                // 可选重叠提醒
+                const l = getVal(inputL);
+                const r = getVal(inputR);
+                const sc = getVal(inputSc);
+                const tl = getVal(inputTl);
+                const ml = getVal(inputMl);
+                if (!validateInputs(l, r, sc, tl, ml)) return;
+
                 for (const t of tasks) {
                     if (Math.max(l, t.l) <= Math.min(r, t.r)) {
                         showMsg('info', `⚠️ 编号范围 [${l}, ${r}] 与已有子任务 [${t.l}, ${t.r}] 重叠，请确认`);
@@ -858,7 +1012,78 @@
                 showMsg('info', '已清空全部子任务');
             }
 
-            // ---------- Generate YAML ----------
+            // ===== 编辑模态框 =====
+            function openEditModal(id) {
+                const task = tasks.find(t => t.id === id);
+                if (!task) return;
+                editingTaskId = id;
+                editL.value = task.l;
+                editR.value = task.r;
+                editSc.value = task.sc;
+                editTl.value = task.tl;
+                editMl.value = task.ml;
+                editModal.classList.add('active');
+                // 聚焦到第一个输入
+                setTimeout(() => editL.focus(), 100);
+            }
+
+            function closeEditModal() {
+                editModal.classList.remove('active');
+                editingTaskId = null;
+            }
+
+            function saveEdit() {
+                if (editingTaskId === null) return;
+                const l = getVal(editL);
+                const r = getVal(editR);
+                const sc = getVal(editSc);
+                const tl = getVal(editTl);
+                const ml = getVal(editMl);
+                if (!validateInputs(l, r, sc, tl, ml)) return;
+
+                // 检查重叠 (排除自身)
+                for (const t of tasks) {
+                    if (t.id === editingTaskId) continue;
+                    if (Math.max(l, t.l) <= Math.min(r, t.r)) {
+                        showMsg('info', `⚠️ 修改后的范围 [${l}, ${r}] 与子任务 [${t.l}, ${t.r}] 重叠，请确认`);
+                        // 仍然允许保存，但给出警告
+                    }
+                }
+
+                const task = tasks.find(t => t.id === editingTaskId);
+                if (task) {
+                    task.l = l;
+                    task.r = r;
+                    task.sc = sc;
+                    task.tl = tl;
+                    task.ml = ml;
+                    renderTable();
+                    showMsg('success', `✅ 子任务已更新: [${l}, ${r}] 分值 ${sc} 时间 ${tl}ms 内存 ${ml}MB`);
+                    closeEditModal();
+                    previewSection.classList.add('hidden');
+                }
+            }
+
+            // 模态框事件
+            editCancel.addEventListener('click', closeEditModal);
+            editSave.addEventListener('click', saveEdit);
+            // 点击外部关闭（点击overlay）
+            editModal.addEventListener('click', function(e) {
+                if (e.target === editModal) closeEditModal();
+            });
+            // 键盘支持：Enter保存，Esc取消
+            document.addEventListener('keydown', function(e) {
+                if (!editModal.classList.contains('active')) return;
+                if (e.key === 'Escape') {
+                    closeEditModal();
+                    e.preventDefault();
+                } else if (e.key === 'Enter') {
+                    saveEdit();
+                    e.preventDefault();
+                }
+            });
+
+            // ===== 生成 YAML =====
             function generateYAML() {
                 if (tasks.length === 0) {
                     showMsg('error', '请先添加至少一个子任务');
@@ -872,7 +1097,7 @@
                 }
                 let lines = [];
                 tasks.forEach((t, idx) => {
-                    const subtaskId = start + idx; // 从起始值开始
+                    const subtaskId = start + idx;
                     for (let i = t.l; i <= t.r; i++) {
                         const fname = prefix ? prefix + i + '.in' : i + '.in';
                         lines.push(fname + ':');
@@ -880,7 +1105,6 @@
                         lines.push('  memoryLimit: ' + (t.ml * 1024));
                         lines.push('  score: ' + t.sc);
                         lines.push('  subtaskId: ' + subtaskId);
-                        // 不加空行，保持紧凑
                     }
                 });
                 return lines.join('\n');
@@ -901,7 +1125,7 @@
                 }
             }
 
-            // ---------- Copy & Download ----------
+            // ===== Copy & Download =====
             function handleCopy() {
                 const text = previewText.value;
                 if (!text) { showToast('没有内容可复制', 'error'); return; }
@@ -945,7 +1169,7 @@
                 showToast('⬇️ config.yml 已下载', 'success');
             }
 
-            // ---------- Import / Export ----------
+            // ===== Import / Export =====
             function exportConfig() {
                 if (tasks.length === 0) {
                     showMsg('error', '没有子任务可导出');
@@ -979,7 +1203,6 @@
                             showMsg('error', '无效的配置文件格式');
                             return;
                         }
-                        // 导入
                         tasks = data.tasks.map(t => ({ ...t, id: nextId++ }));
                         if (data.prefix !== undefined) globalPrefix.value = data.prefix;
                         if (data.subtaskStart !== undefined) subtaskStart.value = data.subtaskStart;
@@ -993,7 +1216,7 @@
                 reader.readAsText(file);
             }
 
-            // ---------- Keyboard ----------
+            // ===== 键盘添加 =====
             function onFormKeydown(e) {
                 if (e.key === 'Enter') {
                     e.preventDefault();
@@ -1001,9 +1224,8 @@
                 }
             }
 
-            // ---------- Init ----------
+            // ===== Init =====
             function init() {
-                // 绑定事件
                 btnAdd.addEventListener('click', addTask);
                 btnClearAll.addEventListener('click', clearAll);
                 btnGenerate.addEventListener('click', handleGenerate);
@@ -1014,7 +1236,7 @@
                 fileInput.addEventListener('change', function(e) {
                     if (this.files && this.files[0]) {
                         importConfig(this.files[0]);
-                        this.value = ''; // reset
+                        this.value = '';
                     }
                 });
 
@@ -1023,7 +1245,6 @@
                     inp.addEventListener('keydown', onFormKeydown);
                 });
 
-                // l 变化时调整 r
                 inputL.addEventListener('change', function() {
                     const l = getVal(inputL);
                     const r = getVal(inputR);
@@ -1032,7 +1253,7 @@
                     }
                 });
 
-                // 添加示例数据
+                // 添加示例
                 tasks.push({ id: nextId++, l: 1, r: 10, sc: 10, tl: 1000, ml: 256 });
                 renderTable();
                 inputL.value = 11;
