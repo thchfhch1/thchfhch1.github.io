@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>洛谷数据测试点配置生成器 (增强版)</title>
+    <!-- SortableJS for drag & drop -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <style>
+        /* 全局样式 (继承之前，并做调整) */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f0f4f8;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .app {
+            max-width: 1100px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 20, 40, 0.12);
+            padding: 32px 36px 40px;
+            transition: box-shadow 0.25s;
+        }
+        @media (max-width: 640px) {
+            .app {
+                padding: 20px 16px 28px;
+                border-radius: 16px;
+            }
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        .header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #1a2b3c;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header h1 small {
+            font-size: 15px;
+            font-weight: 400;
+            color: #6b7a8a;
+            margin-left: 4px;
+        }
+        .header .badge {
+            background: #eef3f9;
+            color: #2c6b9e;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 4px 14px;
+            border-radius: 20px;
+            margin-left: auto;
+            white-space: nowrap;
+        }
+        @media (max-width: 640px) {
+            .header h1 {
+                font-size: 20px;
+                flex-wrap: wrap;
+            }
+            .header .badge {
+                margin-left: 0;
+                width: 100%;
+                text-align: center;
+                margin-top: 6px;
+            }
+        }
+
+        /* 全局设置区 */
+        .global-settings {
+            background: #f7faff;
+            border-radius: 16px;
+            padding: 16px 20px 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e6edf6;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 16px 24px;
+        }
+        .global-settings .setting-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 0 1 auto;
+            min-width: 120px;
+        }
+        .global-settings .setting-group label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #3e4e5e;
+        }
+        .global-settings .setting-group input {
+            padding: 8px 12px;
+            border: 1.5px solid #d4dee8;
+            border-radius: 10px;
+            font-size: 14px;
+            background: #ffffff;
+            height: 40px;
+            outline: none;
+            transition: border-color 0.2s;
+            width: 100%;
+        }
+        .global-settings .setting-group input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+        }
+        .global-settings .setting-group input[type="number"] {
+            -moz-appearance: textfield;
+        }
+        .global-settings .setting-group input[type="number"]::-webkit-outer-spin-button,
+        .global-settings .setting-group input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+        }
+        .global-settings .setting-group.prefix-group {
+            flex: 2 1 200px;
+        }
+        .global-settings .setting-group.prefix-group label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .global-settings .setting-group.prefix-group label .hint {
+            font-weight: 400;
+            color: #8a9aa8;
+            font-size: 12px;
+        }
+
+        .form-card {
+            background: #f7faff;
+            border-radius: 16px;
+            padding: 18px 22px 22px;
+            margin-bottom: 24px;
+            border: 1px solid #e6edf6;
+        }
+        .form-card .form-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a2b3c;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .form-card .form-title span {
+            color: #6b7a8a;
+            font-weight: 400;
+            font-size: 13px;
+        }
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 14px;
+            align-items: flex-end;
+        }
+        .form-group {
+            flex: 1 1 80px;
+            min-width: 70px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .form-group label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #3e4e5e;
+        }
+        .form-group label .unit {
+            font-weight: 400;
+            color: #8a9aa8;
+            font-size: 12px;
+        }
+        .form-group input {
+            padding: 8px 12px;
+            border: 1.5px solid #d4dee8;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1a2b3c;
+            background: #ffffff;
+            height: 44px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+        .form-group input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+        }
+        .form-group input::placeholder {
+            color: #b0c0ce;
+            font-weight: 400;
+        }
+        .form-group input[type="number"] {
+            -moz-appearance: textfield;
+        }
+        .form-group input[type="number"]::-webkit-outer-spin-button,
+        .form-group input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+        }
+
+        .btn-add {
+            flex: 0 0 auto;
+            height: 44px;
+            padding: 0 28px;
+            background: #3b82f6;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+            margin-top: 6px;
+        }
+        .btn-add:hover {
+            background: #2563eb;
+        }
+        .btn-add:active {
+            transform: scale(0.97);
+        }
+        .btn-add:disabled {
+            background: #b0c4d8;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        @media (max-width: 700px) {
+            .form-row {
+                gap: 10px;
+            }
+            .form-group {
+                flex: 1 1 calc(50% - 10px);
+                min-width: 60px;
+            }
+            .btn-add {
+                flex: 1 1 100%;
+                justify-content: center;
+                margin-top: 4px;
+            }
+        }
+
+        .msg {
+            font-size: 14px;
+            padding: 8px 14px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+        .msg.error {
+            display: flex;
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+        }
+        .msg.success {
+            display: flex;
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+        .msg.info {
+            display: flex;
+            background: #eff6ff;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
+        .msg .icon {
+            font-size: 18px;
+        }
+
+        .list-section {
+            margin-top: 4px;
+        }
+        .list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .list-header .count {
+            font-size: 14px;
+            color: #4a5a6a;
+            font-weight: 500;
+        }
+        .list-header .count strong {
+            color: #1a2b3c;
+            font-size: 17px;
+        }
+        .list-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .btn-outline {
+            padding: 6px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1.5px solid #d4dee8;
+            background: transparent;
+            color: #3e4e5e;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            height: 36px;
+        }
+        .btn-outline:hover {
+            background: #f1f6fc;
+            border-color: #b0c4d8;
+        }
+        .btn-outline.danger:hover {
+            background: #fef2f2;
+            border-color: #fca5a5;
+            color: #b91c1c;
+        }
+        .btn-primary {
+            padding: 6px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            background: #3b82f6;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+        .btn-primary:active {
+            transform: scale(0.97);
+        }
+        .btn-primary:disabled {
+            background: #b0c4d8;
+            cursor: not-allowed;
+        }
+        .btn-success {
+            background: #16a34a;
+        }
+        .btn-success:hover {
+            background: #15803d;
+        }
+        .btn-secondary {
+            background: #6b7a8a;
+        }
+        .btn-secondary:hover {
+            background: #4a5a6a;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid #e6edf6;
+            background: #fafcff;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            min-width: 520px;
+        }
+        thead {
+            background: #eef4fa;
+        }
+        th {
+            padding: 12px 14px;
+            text-align: left;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 13px;
+            border-bottom: 1px solid #dce6f0;
+            white-space: nowrap;
+        }
+        td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #eef3f8;
+            color: #1a2b3c;
+            vertical-align: middle;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        tr:hover td {
+            background: #f4f9ff;
+        }
+        .col-id {
+            text-align: center;
+            font-weight: 500;
+            color: #4a5a6a;
+            width: 40px;
+        }
+        .col-del {
+            text-align: center;
+            width: 50px;
+        }
+        .btn-del {
+            background: none;
+            border: none;
+            color: #b0c4d8;
+            font-size: 20px;
+            cursor: pointer;
+            transition: color 0.2s, transform 0.1s;
+            padding: 4px 8px;
+            border-radius: 6px;
+            line-height: 1;
+        }
+        .btn-del:hover {
+            color: #dc2626;
+            background: #fef2f2;
+            transform: scale(1.1);
+        }
+        .empty-row td {
+            text-align: center;
+            color: #9aabb8;
+            padding: 40px 14px;
+            font-size: 15px;
+        }
+
+        /* 拖拽手柄 */
+        .drag-handle {
+            cursor: grab;
+            color: #b0c4d8;
+            font-size: 18px;
+            user-select: none;
+            padding: 0 4px;
+        }
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+
+        .preview-section {
+            margin-top: 24px;
+            border-top: 2px dashed #e6edf6;
+            padding-top: 22px;
+        }
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .preview-header .label {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a2b3c;
+        }
+        .preview-header .label span {
+            font-weight: 400;
+            color: #6b7a8a;
+            font-size: 13px;
+        }
+        .preview-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        textarea {
+            width: 100%;
+            height: 280px;
+            padding: 16px 18px;
+            border: 1px solid #d4dee8;
+            border-radius: 12px;
+            font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #1a2b3c;
+            background: #fafdff;
+            resize: vertical;
+            transition: border-color 0.2s;
+            outline: none;
+            tab-size: 2;
+        }
+        textarea:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
+        }
+        textarea::placeholder {
+            color: #b8c8d6;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: #1a2b3c;
+            color: #fff;
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+            pointer-events: none;
+            z-index: 999;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        .toast.success {
+            background: #16a34a;
+        }
+        .toast.error {
+            background: #dc2626;
+        }
+
+        /* 导入输入框隐藏 */
+        #fileInput {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app" id="app">
+        <!-- 头部 -->
+        <div class="header">
+            <h1>
+                ⚙️ 测试点配置生成器
+                <small>for 洛谷</small>
+            </h1>
+            <span class="badge">📄 config.yml</span>
+        </div>
+
+        <!-- 消息提示 -->
+        <div class="msg" id="msgBox">
+            <span class="icon"></span>
+            <span class="text"></span>
+        </div>
+
+        <!-- 全局设置 (醒目) -->
+        <div class="global-settings">
+            <div class="setting-group prefix-group">
+                <label>
+                    📁 文件名前缀
+                    <span class="hint">(留空则直接使用数字)</span>
+                </label>
+                <input type="text" id="globalPrefix" placeholder="例如: data" value="" />
+            </div>
+            <div class="setting-group">
+                <label>🏷️ subtask 起始编号</label>
+                <input type="number" id="subtaskStart" value="1" min="0" step="1" />
+            </div>
+            <div style="flex:1; min-width:100px; display:flex; align-items:flex-end; gap:8px;">
+                <button class="btn-outline" id="btnImport" style="height:40px;">📂 导入配置</button>
+                <button class="btn-outline" id="btnExport" style="height:40px;">📤 导出配置</button>
+                <input type="file" id="fileInput" accept=".json" />
+            </div>
+        </div>
+
+        <!-- 添加子任务 -->
+        <div class="form-card">
+            <div class="form-title">
+                ➕ 添加子任务
+                <span>— 每个子任务包含连续的测试点编号范围</span>
+            </div>
+            <div class="form-row" id="formRow">
+                <div class="form-group">
+                    <label>起始编号 <span class="unit">(l)</span></label>
+                    <input type="number" id="inputL" value="1" min="1" step="1" />
+                </div>
+                <div class="form-group">
+                    <label>结束编号 <span class="unit">(r)</span></label>
+                    <input type="number" id="inputR" value="10" min="1" step="1" />
+                </div>
+                <div class="form-group">
+                    <label>分值 <span class="unit">(sc)</span></label>
+                    <input type="number" id="inputSc" value="10" min="1" step="1" />
+                </div>
+                <div class="form-group">
+                    <label>时间限制 <span class="unit">(ms)</span></label>
+                    <input type="number" id="inputTl" value="1000" min="1" step="1" />
+                </div>
+                <div class="form-group">
+                    <label>内存限制 <span class="unit">(MB)</span></label>
+                    <input type="number" id="inputMl" value="256" min="1" step="1" />
+                </div>
+                <button class="btn-add" id="btnAdd">➕ 添加</button>
+            </div>
+        </div>
+
+        <!-- 子任务列表 -->
+        <div class="list-section">
+            <div class="list-header">
+                <div class="count">📋 已添加子任务 · <strong id="taskCount">0</strong> 个</div>
+                <div class="list-actions">
+                    <button class="btn-outline danger" id="btnClearAll">🗑️ 清空全部</button>
+                    <button class="btn-primary" id="btnGenerate">🚀 生成配置文件</button>
+                </div>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:30px;">#</th>
+                            <th style="width:30px;">↕</th>
+                            <th>起始 (l)</th>
+                            <th>结束 (r)</th>
+                            <th>分值</th>
+                            <th>时间 (ms)</th>
+                            <th>内存 (MB)</th>
+                            <th style="width:50px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="taskTableBody">
+                        <tr class="empty-row">
+                            <td colspan="8">暂无子任务，请添加</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 预览 -->
+        <div class="preview-section hidden" id="previewSection">
+            <div class="preview-header">
+                <div class="label">📄 配置文件预览 <span>— config.yml</span></div>
+                <div class="preview-actions">
+                    <button class="btn-outline" id="btnCopy">📋 复制</button>
+                    <button class="btn-success btn-primary" id="btnDownload">⬇️ 下载 config.yml</button>
+                </div>
+            </div>
+            <textarea id="previewText" readonly placeholder="生成后这里将显示配置内容…"></textarea>
+        </div>
+
+        <div style="margin-top:22px;font-size:13px;color:#8a9aa8;text-align:center;border-top:1px solid #eef3f8;padding-top:18px;">
+            生成的文件格式符合洛谷数据测试点规范 · 内存限制自动转换为 KB · 拖拽行手柄可调整子任务顺序
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // DOM refs
+            const inputL = document.getElementById('inputL');
+            const inputR = document.getElementById('inputR');
+            const inputSc = document.getElementById('inputSc');
+            const inputTl = document.getElementById('inputTl');
+            const inputMl = document.getElementById('inputMl');
+            const globalPrefix = document.getElementById('globalPrefix');
+            const subtaskStart = document.getElementById('subtaskStart');
+            const btnAdd = document.getElementById('btnAdd');
+            const tbody = document.getElementById('taskTableBody');
+            const taskCount = document.getElementById('taskCount');
+            const btnClearAll = document.getElementById('btnClearAll');
+            const btnGenerate = document.getElementById('btnGenerate');
+            const previewSection = document.getElementById('previewSection');
+            const previewText = document.getElementById('previewText');
+            const btnCopy = document.getElementById('btnCopy');
+            const btnDownload = document.getElementById('btnDownload');
+            const msgBox = document.getElementById('msgBox');
+            const toast = document.getElementById('toast');
+            const btnExport = document.getElementById('btnExport');
+            const btnImport = document.getElementById('btnImport');
+            const fileInput = document.getElementById('fileInput');
+
+            // ---------- State ----------
+            let tasks = []; // { id, l, r, sc, tl, ml }
+            let nextId = 1;
+
+            // ---------- Helpers ----------
+            function showMsg(type, text) {
+                const map = { error: '❌', success: '✅', info: 'ℹ️' };
+                msgBox.className = 'msg ' + type;
+                msgBox.querySelector('.icon').textContent = map[type] || 'ℹ️';
+                msgBox.querySelector('.text').textContent = text;
+                msgBox.style.display = 'flex';
+                clearTimeout(msgBox._timer);
+                msgBox._timer = setTimeout(() => {
+                    msgBox.style.display = 'none';
+                }, 5000);
+            }
+
+            function showToast(text, type) {
+                toast.textContent = text;
+                toast.className = 'toast ' + (type || '');
+                void toast.offsetWidth;
+                toast.classList.add('show');
+                clearTimeout(toast._timer);
+                toast._timer = setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2500);
+            }
+
+            function getVal(input) {
+                const v = parseInt(input.value.trim(), 10);
+                return isNaN(v) ? null : v;
+            }
+
+            function getStr(input) {
+                return input.value.trim();
+            }
+
+            function validateInputs() {
+                const l = getVal(inputL);
+                const r = getVal(inputR);
+                const sc = getVal(inputSc);
+                const tl = getVal(inputTl);
+                const ml = getVal(inputMl);
+                if (l === null || l < 1) { showMsg('error', '起始编号必须为正整数'); return null; }
+                if (r === null || r < 1) { showMsg('error', '结束编号必须为正整数'); return null; }
+                if (l > r) { showMsg('error', '起始编号不能大于结束编号'); return null; }
+                if (sc === null || sc < 1) { showMsg('error', '分值必须为正整数'); return null; }
+                if (tl === null || tl < 1) { showMsg('error', '时间限制必须为正整数'); return null; }
+                if (ml === null || ml < 1) { showMsg('error', '内存限制必须为正整数'); return null; }
+                return { l, r, sc, tl, ml };
+            }
+
+            // ---------- Render Table ----------
+            function renderTable() {
+                tbody.innerHTML = '';
+                if (tasks.length === 0) {
+                    tbody.innerHTML = `<tr class="empty-row"><td colspan="8">暂无子任务，请添加</td></tr>`;
+                    taskCount.textContent = '0';
+                    previewSection.classList.add('hidden');
+                    return;
+                }
+                tasks.forEach((t, idx) => {
+                    const tr = document.createElement('tr');
+                    tr.dataset.id = t.id;
+                    tr.innerHTML = `
+                        <td class="col-id">${idx + 1}</td>
+                        <td class="drag-handle" style="text-align:center; cursor:grab;">⠿</td>
+                        <td>${t.l}</td>
+                        <td>${t.r}</td>
+                        <td>${t.sc}</td>
+                        <td>${t.tl}</td>
+                        <td>${t.ml}</td>
+                        <td class="col-del">
+                            <button class="btn-del" data-id="${t.id}" title="删除">✕</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+                taskCount.textContent = tasks.length;
+
+                // 绑定删除事件
+                tbody.querySelectorAll('.btn-del').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        const id = parseInt(this.dataset.id, 10);
+                        deleteTask(id);
+                    });
+                });
+
+                // 初始化拖拽 (Sortable)
+                initSortable();
+
+                previewSection.classList.add('hidden');
+            }
+
+            // ---------- Sortable ----------
+            let sortableInstance = null;
+            function initSortable() {
+                if (sortableInstance) {
+                    sortableInstance.destroy();
+                    sortableInstance = null;
+                }
+                if (tasks.length < 2) return;
+                const el = tbody;
+                sortableInstance = new Sortable(el, {
+                    handle: '.drag-handle',
+                    animation: 150,
+                    onEnd: function(evt) {
+                        // 更新 tasks 顺序
+                        const oldIndex = evt.oldIndex;
+                        const newIndex = evt.newIndex;
+                        if (oldIndex === newIndex) return;
+                        const moved = tasks.splice(oldIndex, 1)[0];
+                        tasks.splice(newIndex, 0, moved);
+                        // 重新渲染表格保持 id 不变
+                        renderTable();
+                        showMsg('info', '↕ 子任务顺序已更新');
+                    }
+                });
+            }
+
+            // ---------- CRUD ----------
+            function addTask() {
+                const data = validateInputs();
+                if (!data) return;
+                const { l, r, sc, tl, ml } = data;
+                // 可选重叠提醒
+                for (const t of tasks) {
+                    if (Math.max(l, t.l) <= Math.min(r, t.r)) {
+                        showMsg('info', `⚠️ 编号范围 [${l}, ${r}] 与已有子任务 [${t.l}, ${t.r}] 重叠，请确认`);
+                        break;
+                    }
+                }
+                tasks.push({ id: nextId++, l, r, sc, tl, ml });
+                renderTable();
+                showMsg('success', `✅ 已添加子任务: [${l}, ${r}] 分值 ${sc} 时间 ${tl}ms 内存 ${ml}MB`);
+                inputL.value = r + 1;
+                inputR.value = r + 10;
+                inputL.focus();
+                inputL.select();
+                previewSection.classList.add('hidden');
+            }
+
+            function deleteTask(id) {
+                tasks = tasks.filter(t => t.id !== id);
+                renderTable();
+                if (tasks.length === 0) previewSection.classList.add('hidden');
+                showMsg('info', '已删除该子任务');
+            }
+
+            function clearAll() {
+                if (tasks.length === 0) return;
+                if (!confirm('确定要清空所有子任务吗？')) return;
+                tasks = [];
+                nextId = 1;
+                renderTable();
+                previewSection.classList.add('hidden');
+                showMsg('info', '已清空全部子任务');
+            }
+
+            // ---------- Generate YAML ----------
+            function generateYAML() {
+                if (tasks.length === 0) {
+                    showMsg('error', '请先添加至少一个子任务');
+                    return null;
+                }
+                const prefix = getStr(globalPrefix);
+                const start = getVal(subtaskStart);
+                if (start === null || start < 0) {
+                    showMsg('error', 'subtask 起始编号必须为非负整数');
+                    return null;
+                }
+                let lines = [];
+                tasks.forEach((t, idx) => {
+                    const subtaskId = start + idx; // 从起始值开始
+                    for (let i = t.l; i <= t.r; i++) {
+                        const fname = prefix ? prefix + i + '.in' : i + '.in';
+                        lines.push(fname + ':');
+                        lines.push('  timeLimit: ' + t.tl);
+                        lines.push('  memoryLimit: ' + (t.ml * 1024));
+                        lines.push('  score: ' + t.sc);
+                        lines.push('  subtaskId: ' + subtaskId);
+                        // 不加空行，保持紧凑
+                    }
+                });
+                return lines.join('\n');
+            }
+
+            function showPreview(yaml) {
+                if (!yaml) return;
+                previewText.value = yaml;
+                previewSection.classList.remove('hidden');
+                previewSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
+            function handleGenerate() {
+                const yaml = generateYAML();
+                if (yaml) {
+                    showPreview(yaml);
+                    showToast('✅ 配置生成成功！', 'success');
+                }
+            }
+
+            // ---------- Copy & Download ----------
+            function handleCopy() {
+                const text = previewText.value;
+                if (!text) { showToast('没有内容可复制', 'error'); return; }
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text).then(() => {
+                        showToast('📋 已复制到剪贴板', 'success');
+                    }).catch(() => fallbackCopy(text));
+                } else {
+                    fallbackCopy(text);
+                }
+            }
+
+            function fallbackCopy(text) {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                try {
+                    document.execCommand('copy');
+                    showToast('📋 已复制到剪贴板', 'success');
+                } catch (e) {
+                    showToast('复制失败，请手动复制', 'error');
+                }
+                document.body.removeChild(ta);
+            }
+
+            function handleDownload() {
+                const text = previewText.value;
+                if (!text) { showToast('没有内容可下载', 'error'); return; }
+                const blob = new Blob([text], { type: 'text/yaml;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'config.yml';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showToast('⬇️ config.yml 已下载', 'success');
+            }
+
+            // ---------- Import / Export ----------
+            function exportConfig() {
+                if (tasks.length === 0) {
+                    showMsg('error', '没有子任务可导出');
+                    return;
+                }
+                const data = {
+                    version: '1.0',
+                    prefix: getStr(globalPrefix),
+                    subtaskStart: getVal(subtaskStart) || 0,
+                    tasks: tasks.map(({ id, l, r, sc, tl, ml }) => ({ id, l, r, sc, tl, ml }))
+                };
+                const json = JSON.stringify(data, null, 2);
+                const blob = new Blob([json], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'task_config.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showToast('📤 配置已导出', 'success');
+            }
+
+            function importConfig(file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        if (!data.tasks || !Array.isArray(data.tasks)) {
+                            showMsg('error', '无效的配置文件格式');
+                            return;
+                        }
+                        // 导入
+                        tasks = data.tasks.map(t => ({ ...t, id: nextId++ }));
+                        if (data.prefix !== undefined) globalPrefix.value = data.prefix;
+                        if (data.subtaskStart !== undefined) subtaskStart.value = data.subtaskStart;
+                        renderTable();
+                        showMsg('success', `✅ 成功导入 ${tasks.length} 个子任务`);
+                        previewSection.classList.add('hidden');
+                    } catch (err) {
+                        showMsg('error', '导入失败: ' + err.message);
+                    }
+                };
+                reader.readAsText(file);
+            }
+
+            // ---------- Keyboard ----------
+            function onFormKeydown(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    btnAdd.click();
+                }
+            }
+
+            // ---------- Init ----------
+            function init() {
+                // 绑定事件
+                btnAdd.addEventListener('click', addTask);
+                btnClearAll.addEventListener('click', clearAll);
+                btnGenerate.addEventListener('click', handleGenerate);
+                btnCopy.addEventListener('click', handleCopy);
+                btnDownload.addEventListener('click', handleDownload);
+                btnExport.addEventListener('click', exportConfig);
+                btnImport.addEventListener('click', () => fileInput.click());
+                fileInput.addEventListener('change', function(e) {
+                    if (this.files && this.files[0]) {
+                        importConfig(this.files[0]);
+                        this.value = ''; // reset
+                    }
+                });
+
+                const inputs = [inputL, inputR, inputSc, inputTl, inputMl];
+                inputs.forEach(inp => {
+                    inp.addEventListener('keydown', onFormKeydown);
+                });
+
+                // l 变化时调整 r
+                inputL.addEventListener('change', function() {
+                    const l = getVal(inputL);
+                    const r = getVal(inputR);
+                    if (l !== null && r !== null && l > r) {
+                        inputR.value = l;
+                    }
+                });
+
+                // 添加示例数据
+                tasks.push({ id: nextId++, l: 1, r: 10, sc: 10, tl: 1000, ml: 256 });
+                renderTable();
+                inputL.value = 11;
+                inputR.value = 20;
+                showMsg('info', '💡 已添加一个示例子任务，可修改或添加更多');
+            }
+
+            init();
+        })();
+    </script>
+
+</body>
+</html>
